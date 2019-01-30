@@ -3,9 +3,9 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const passport = require("passport");
 
-const usersRouter = require("./backend/users/usersRouter");
-const profileRouter = require("./backend/profiles/profilesRouter");
-const postsRouter = require("./backend/posts/postsRouter");
+const usersRouter = require("./backend/users/userRouter");
+const profileRouter = require("./backend/profiles/profileRouter");
+const postsRouter = require("./backend/posts/postRouter");
 
 const app = express();
 

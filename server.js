@@ -17,15 +17,11 @@ app.use(bodyParser.json());
 const db = require("./backend/config/keys").MONGODB_URI;
 
 // Connect to MongoDb
-mongoose.connect(
-  db,
-  { useNewUrlParser: true },
-  err => {
-    if (!err) {
-      console.log("MongodDB Connected");
-    }
+mongoose.connect(db, { useNewUrlParser: true }, err => {
+  if (!err) {
+    console.log("MongodDB Connected");
   }
-);
+});
 
 // Passport middleware
 app.use(passport.initialize());

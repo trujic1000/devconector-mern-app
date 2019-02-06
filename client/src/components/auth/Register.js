@@ -1,22 +1,47 @@
 import React, { Component } from "react";
-import axios from "axios";
+import PropTypes from "prop-types";
+import { withRouter } from "react-router-dom";
 import classnames from "classnames";
+import { connect } from "react-redux";
+import { registerUser } from "../../actions/authActions";
 
-export default class Register extends Component {
+class Register extends Component {
   constructor() {
     super();
     this.state = {
-      name: "",
-      email: "",
-      password: "",
-      password2: "",
+      user: {
+        name: "",
+        email: "",
+        password: "",
+        password2: ""
+      },
       errors: {}
     };
   }
 
+  // Redirecting if we're already logged in
+  componentDidMount() {
+    if (this.props.auth.isAuthenticated) {
+      this.props.history.push("/dashboard");
+    }
+  }
+
+  // Lifecycle hook called when component recieves props
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.errors) {
+      this.setState({ errors: nextProps.errors });
+    }
+  }
+
   // onChange method to link fields with state
   onChange = e => {
-    this.setState({ [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    this.setState({
+      user: {
+        ...this.state.user,
+        [name]: value
+      }
+    });
   };
 
   // Submitting the form
@@ -24,18 +49,11 @@ export default class Register extends Component {
     e.preventDefault();
 
     const newUser = {
-      name: this.state.name,
-      email: this.state.email,
-      password: this.state.password,
-      password2: this.state.password2
+      ...this.state.user
     };
 
-    axios
-      .post("/api/users/register", newUser)
-      .then(res => console.log(res.data))
-      .catch(err => {
-        this.setState({ errors: err.response.data });
-      });
+    // Allows us to use this.props.history from within the action
+    this.props.registerUser(newUser, this.props.history);
   };
 
   render() {
@@ -58,7 +76,7 @@ export default class Register extends Component {
                     })}
                     placeholder="Name"
                     name="name"
-                    value={this.state.name}
+                    value={this.state.user.name}
                     onChange={this.onChange}
                   />
                   {errors.name && (
@@ -73,7 +91,7 @@ export default class Register extends Component {
                     })}
                     placeholder="Email Address"
                     name="email"
-                    value={this.state.email}
+                    value={this.state.user.email}
                     onChange={this.onChange}
                   />
                   {errors.email && (
@@ -92,7 +110,7 @@ export default class Register extends Component {
                     })}
                     placeholder="Password"
                     name="password"
-                    value={this.state.passwrod}
+                    value={this.state.user.passwrod}
                     onChange={this.onChange}
                   />
                   {errors.password && (
@@ -107,7 +125,7 @@ export default class Register extends Component {
                     })}
                     placeholder="Confirm Password"
                     name="password2"
-                    value={this.state.password2}
+                    value={this.state.user.password2}
                     onChange={this.onChange}
                   />
                   {errors.password2 && (
@@ -123,3 +141,19 @@ export default class Register extends Component {
     );
   }
 }
+
+Register.propTypes = {
+  registerUser: PropTypes.func.isRequired,
+  auth: PropTypes.object.isRequired,
+  errors: PropTypes.object.isRequired
+};
+
+const mapStateToProps = state => ({
+  auth: state.auth,
+  errors: state.errors
+});
+
+export default connect(
+  mapStateToProps,
+  { registerUser }
+)(withRouter(Register));

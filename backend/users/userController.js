@@ -77,7 +77,7 @@ async function login(req, res) {
         });
       } else {
         errors.auth = "Authentication failed";
-        return res.status(400).json(erros);
+        return res.status(400).json(errors);
       }
     });
   } catch (error) {
